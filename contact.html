@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact — NANI Interior Works</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:       #0a0908;
+      --bg2:      #0f0e0b;
+      --card:     #131210;
+      --border:   rgba(196,160,90,0.18);
+      --border2:  rgba(196,160,90,0.08);
+      --gold:     #c4a05a;
+      --gold-l:   #e8c97a;
+      --gold-dim: rgba(196,160,90,0.28);
+      --gold-bg:  rgba(196,160,90,0.06);
+      --text:     #f0ece4;
+      --text2:    #b0a898;
+      --muted:    #7a7060;
+      --dim:      #484038;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Outfit', sans-serif; font-weight: 300;
+      min-height: 100vh; overflow-x: hidden;
+    }
+    body::after {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      opacity: .5;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 52px; height: 70px;
+      background: linear-gradient(180deg, rgba(10,9,8,.97) 0%, rgba(10,9,8,0) 100%);
+      backdrop-filter: blur(8px);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+    .nav-diamond { width: 32px; height: 32px; background: var(--gold); clip-path: polygon(50% 0%,100% 50%,50% 100%,0% 50%); }
+    .nav-name { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; letter-spacing: .14em; }
+    .nav-sub  { display: block; font-size: .56rem; letter-spacing: .3em; text-transform: uppercase; color: var(--muted); margin-top: -2px; }
+    .nav-links { display: flex; gap: 30px; list-style: none; }
+    .nav-links a { text-decoration: none; font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); transition: color .2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+    .nav-cta {
+      font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
+      border: 1px solid var(--gold-dim); color: var(--gold);
+      padding: 7px 20px; background: transparent; cursor: pointer;
+      font-family: 'Outfit', sans-serif; transition: all .25s;
+    }
+    .nav-cta:hover { background: var(--gold); color: var(--bg); }
+
+    /* HERO */
+    .hero {
+      padding: 130px 52px 64px; position: relative; overflow: hidden;
+      text-align: center; display: flex; flex-direction: column; align-items: center;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 80% at 50% 60%, rgba(196,160,90,.07) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 15% 20%, rgba(196,160,90,.03) 0%, transparent 50%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(196,160,90,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(196,160,90,.04) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 75%);
+    }
+    .eyebrow {
+      font-size: .66rem; letter-spacing: .36em; text-transform: uppercase; color: var(--gold);
+      margin-bottom: 18px; display: flex; align-items: center; gap: 14px;
+      opacity: 0; animation: up .8s .2s forwards;
+    }
+    .eyebrow::before, .eyebrow::after { content: ''; width: 34px; height: 1px; background: var(--gold-dim); }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 8vw, 6.5rem); font-weight: 300; line-height: .93;
+      opacity: 0; animation: up .9s .35s forwards;
+    }
+    .hero h1 em { font-style: italic; color: var(--gold); }
+    .hero-sub {
+      margin-top: 22px; max-width: 420px; font-size: .86rem; color: var(--muted);
+      line-height: 1.75; opacity: 0; animation: up .9s .5s forwards;
+    }
+    .location-pills {
+      margin-top: 28px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+      opacity: 0; animation: up .9s .65s forwards;
+    }
+    .pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      border: 1px solid var(--border); padding: 7px 18px;
+      font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--text2);
+    }
+    .pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+    /* MAP SECTION */
+    .map-section { padding: 56px 52px 0; }
+    .section-label {
+      font-size: .64rem; letter-spacing: .34em; text-transform: uppercase; color: var(--gold);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
+    }
+    .section-label::after { content: ''; width: 36px; height: 1px; background: var(--gold-dim); }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 300; margin-bottom: 32px;
+    }
+    .section-title em { font-style: italic; color: var(--gold); }
+
+    .map-wrap { position: relative; border: 1px solid var(--border); overflow: hidden; height: 560px; }
+    #map { width: 100%; height: 100%; }
+
+    /* dark tile tint */
+    .leaflet-tile { filter: brightness(.48) saturate(.55) hue-rotate(8deg) !important; }
+    .leaflet-container { background: #0a0908 !important; }
+    .leaflet-control-zoom a {
+      background: #131210 !important; border-color: var(--border) !important;
+      color: var(--gold) !important; font-size: 16px !important;
+    }
+    .leaflet-control-zoom a:hover { background: var(--gold) !important; color: var(--bg) !important; }
+
+    /* Marker */
+    .nani-pin {
+      width: 32px; height: 32px;
+      border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,.7);
+    }
+    .nani-pin svg { transform: rotate(45deg); width: 13px; height: 13px; }
+
+    /* Popup */
+    .leaflet-popup-content-wrapper {
+      background: #131210 !important; border: 1px solid var(--border) !important;
+      border-radius: 0 !important; box-shadow: 0 8px 28px rgba(0,0,0,.8) !important;
+    }
+    .leaflet-popup-tip-container { display: none !important; }
+    .leaflet-popup-close-button { color: var(--muted) !important; top: 10px !important; right: 12px !important; font-size: 1rem !important; }
+    .leaflet-popup-content { margin: 18px 20px 16px !important; min-width: 200px; font-family: 'Outfit', sans-serif; }
+    .pop-tag   { font-size: .57rem; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+    .pop-title { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 400; color: #f0ece4; margin-bottom: 8px; line-height: 1.15; }
+    .pop-work  { font-size: .7rem; color: #7a7060; line-height: 1.6; padding-top: 8px; border-top: 1px solid rgba(196,160,90,.1); }
+    .pop-work strong { color: var(--gold); font-weight: 500; display: block; }
+
+    /* Legend */
+    .map-legend {
+      position: absolute; bottom: 18px; right: 18px; z-index: 500;
+      background: rgba(10,9,8,.93); backdrop-filter: blur(10px);
+      border: 1px solid var(--border); padding: 14px 18px;
+    }
+    .leg-title { font-size: .56rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    .leg-row   { display: flex; align-items: center; gap: 9px; font-size: .68rem; color: var(--text2); margin-bottom: 6px; }
+    .leg-row:last-child { margin-bottom: 0; }
+    .leg-dot   { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* BOTTOM GRID */
+    .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 2px; }
+
+    /* CONTACT CARDS */
+    .cards-col { display: flex; flex-direction: column; gap: 2px; }
+    .ccard {
+      background: var(--card); border: 1px solid var(--border2);
+      padding: 38px 36px; position: relative; overflow: hidden;
+      transition: border-color .3s;
+    }
+    .ccard::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    .ccard-tag  { font-size: .58rem; letter-spacing: .28em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+    .ccard-city { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 300; line-height: 1; margin-bottom: 3px; }
+    .ccard-dist { font-size: .65rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 22px; }
+    .ccard-line { width: 32px; height: 1px; background: var(--gold-dim); margin-bottom: 20px; }
+    .ccard-rows { display: flex; flex-direction: column; gap: 13px; }
+    .ccard-row  { display: flex; gap: 13px; align-items: flex-start; }
+    .ccard-ico  {
+      width: 32px; height: 32px; flex-shrink: 0;
+      border: 1px solid var(--border); display: flex;
+      align-items: center; justify-content: center; color: var(--gold);
+    }
+    .ccard-ico svg { width: 12px; height: 12px; }
+    .ccard-lbl { font-size: .54rem; letter-spacing: .2em; text-transform: uppercase; color: var(--dim); margin-bottom: 2px; }
+    .ccard-val { font-size: .78rem; color: var(--text2); line-height: 1.5; }
+    .ccard-val a { color: var(--text2); text-decoration: none; transition: color .2s; }
+    .ccard-val a:hover { color: var(--gold); }
+    .ccard-num {
+      position: absolute; bottom: -8px; right: 16px;
+      font-family: 'Cormorant Garamond', serif; font-size: 6rem;
+      font-weight: 300; color: rgba(196,160,90,.05);
+      pointer-events: none; user-select: none;
+    }
+
+    /* FORM */
+    .form-card { background: var(--bg2); border: 1px solid var(--border2); padding: 40px 38px; }
+    .form-title { font-family: 'Cormorant Garamond', serif; font-size: 1.85rem; font-weight: 300; margin-bottom: 6px; }
+    .form-sub   { font-size: .76rem; color: var(--muted); margin-bottom: 28px; line-height: 1.65; }
+    .frow  { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .fgrp  { margin-bottom: 15px; }
+    .flbl  { display: block; font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+    .fin {
+      width: 100%; background: rgba(255,255,255,.025); border: 1px solid var(--border2);
+      color: var(--text); padding: 11px 13px; font-family: 'Outfit', sans-serif;
+      font-size: .8rem; font-weight: 300; outline: none; transition: border-color .2s; -webkit-appearance: none;
+    }
+    .fin:focus { border-color: var(--gold-dim); }
+    .fin::placeholder { color: var(--dim); }
+    select.fin {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M0 0l4.5 5L9 0z' fill='%23c4a05a'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 13px center; padding-right: 32px; cursor: pointer;
+    }
+    select.fin option { background: #131210; }
+    textarea.fin { resize: vertical; min-height: 96px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
+    .chip {
+      padding: 5px 13px; border: 1px solid var(--border2);
+      font-size: .62rem; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--muted); cursor: pointer; background: transparent;
+      font-family: 'Outfit', sans-serif; transition: all .2s;
+    }
+    .chip:hover { border-color: var(--border); color: var(--text); }
+    .chip.on { background: var(--gold-bg); border-color: var(--gold-dim); color: var(--gold); }
+    .ffoot { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .fnote { font-size: .64rem; color: var(--dim); max-width: 180px; line-height: 1.5; }
+    .fsub {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 12px 32px; background: var(--gold); color: var(--bg);
+      border: none; cursor: pointer; font-family: 'Outfit', sans-serif;
+      font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; font-weight: 500; transition: all .3s;
+    }
+    .fsub:hover { background: var(--gold-l); transform: translateY(-2px); }
+    .fsub svg { width: 12px; height: 12px; }
+
+    /* Success */
+    .success { display: none; text-align: center; padding: 48px 20px; }
+    .success.show { display: block; }
+    .sico {
+      width: 50px; height: 50px; border: 1px solid var(--gold-dim); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: var(--gold);
+    }
+    .stitle { font-family: 'Cormorant Garamond', serif; font-size: 1.65rem; margin-bottom: 8px; }
+    .ssub   { font-size: .76rem; color: var(--muted); line-height: 1.7; max-width: 270px; margin: 0 auto 22px; }
+    .rbtn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: .66rem; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--gold); border: 1px solid var(--gold-dim); padding: 8px 16px;
+      background: transparent; cursor: pointer; font-family: 'Outfit', sans-serif; transition: all .25s;
+    }
+    .rbtn:hover { background: var(--gold); color: var(--bg); }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border); padding: 28px 52px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px; flex-wrap: wrap; margin-top: 2px;
+    }
+    .fbrand { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; letter-spacing: .1em; }
+    .fcopy  { font-size: .64rem; color: var(--dim); letter-spacing: .06em; }
+    .flinks { display: flex; gap: 22px; }
+    .flinks a { font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s; }
+    .flinks a:hover { color: var(--gold); }
+
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .65s ease, transform .65s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+    .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; }
+
+    @keyframes up {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      nav { padding: 0 18px; }
+      .nav-links, .nav-cta { display: none; }
+      .hero, .map-section { padding-left: 18px; padding-right: 18px; }
+      .bottom-grid { grid-template-columns: 1fr; }
+      .map-wrap { height: 380px; }
+      footer { padding: 22px 18px; flex-direction: column; text-align: center; }
+      .frow { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="nav-diamond"></div>
+    <div>
+      <span class="nav-name">NANI</span>
+      <span class="nav-sub">Interior Works</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="index.html#items">Items</a></li>
+    <li><a href="contact.html" class="active">Contact</a></li>
+  </ul>
+  <button class="nav-cta">+91 86600 12345</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="eyebrow">Reach Us</div>
+  <h1>Let's Build<br><em>Together</em></h1>
+  <p class="hero-sub">Two showrooms, one vision — proudly crafting exceptional interiors across Andhra Pradesh.</p>
+  <div class="location-pills">
+    <div class="pill"><div class="pill-dot"></div>Vijayawada</div>
+    <div class="pill"><div class="pill-dot"></div>Nellore</div>
+    <div class="pill"><div class="pill-dot"></div>Guntur</div>
+    <div class="pill"><div class="pill-dot"></div>Andhra Pradesh</div>
+  </div>
+</section>
+
+<!-- MAP -->
+<section class="map-section">
+  <div class="section-label reveal">Our Presence</div>
+  <h2 class="section-title reveal d1">Where We've <em>Worked</em></h2>
+
+  <div class="map-wrap reveal d2">
+    <div id="map"></div>
+    <div class="map-legend">
+      <div class="leg-title">Map Key</div>
+      <div class="leg-row"><div class="leg-dot" style="background:var(--gold)"></div>NANI Showroom</div>
+      <div class="leg-row"><div class="leg-dot" style="background:#4a9e8a"></div>Project Location</div>
+    </div>
+  </div>
+
+  <!-- Showrooms + Form -->
+  <div class="bottom-grid">
+
+    <div class="cards-col">
+      <!-- Vijayawada -->
+      <div class="ccard reveal d1">
+        <div class="ccard-tag">Flagship Showroom</div>
+        <div class="ccard-city">Vijayawada</div>
+        <div class="ccard-dist">Krishna District · Andhra Pradesh</div>
+        <div class="ccard-line"></div>
+        <div class="ccard-rows">
+          <div class="ccard-row">
+            <div class="ccard-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><div class="ccard-lbl">Address</div><div class="ccard-val">40-1-48, MG Road, Labbipet<br>Vijayawada — 520 010</div></div>
+          </div>
+          <div class="ccard-row">
+            <div class="ccard-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 012 1h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L6.91 8.91a16 16 0 006.16 6.16l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg></div>
+            <div><div class="ccard-lbl">Phone</div><div class="ccard-val"><a href="tel:+918660012345">+91 86600 12345</a></div></div>
+          </div>
+          <div class="ccard-row">
+            <div class="ccard-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div><div class="ccard-lbl">Hours</div><div class="ccard-val">Mon–Sat 10am–8pm · Sun 11am–6pm</div></div>
+          </div>
+        </div>
+        <div class="ccard-num">01</div>
+      </div>
+<div class="cards-col">
+      <!-- Guntur -->
+      <div class="ccard reveal d1">
+        <div class="ccard-tag">Flagship Showroom</div>
+        <div class="ccard-city">Guntur</div>
+        <div class="ccard-dist">Guntur District · Andhra Pradesh</div>
+        <div class="ccard-line"></div>
+        <div class="ccard-rows">
+          <div class="ccard-row">
+            <div class="ccard-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><div class="ccard-lbl">Address</div><div class="ccard-val">40-1-48, MG Road, Labbipet<br>Vijayawada — 520 010</div></div>
+          </div>
+          <div class="ccard-row">
+            <div class="ccard-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 012 1h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L6.91 8.91a16 16 0 006.16 6.16l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg></div>
+            <div><div class="ccard-lbl">Phone</div><div class="ccard-val"><a href="tel:+918660012345">+91 86600 12345</a></div></div>
+          </div>
+          <div class="ccard-row">
+            <div class="ccard-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div><div class="ccard-lbl">Hours</div><div class="ccard-val">Mon–Sat 10am–8pm · Sun 11am–6pm</div></div>
+          </div>
+        </div>
+        <div class="ccard-num">01</div>
+      </div>
+      <!-- Nellore -->
+      <div class="ccard reveal d2">
+        <div class="ccard-tag">Showroom</div>
+        <div class="ccard-city">Nellore</div>
+        <div class="ccard-dist">S.P.S.R. Nellore District · Andhra Pradesh</div>
+        <div class="ccard-line"></div>
+        <div class="ccard-rows">
+          <div class="ccard-row">
+            <div class="ccard-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><div class="ccard-lbl">Address</div><div class="ccard-val">12-3-456, Grand Trunk Road<br>Nellore — 524 001</div></div>
+          </div>
+          <div class="ccard-row">
+            <div class="ccard-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 012 1h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L6.91 8.91a16 16 0 006.16 6.16l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg></div>
+            <div><div class="ccard-lbl">Phone</div><div class="ccard-val"><a href="tel:+918610012345">+91 86100 12345</a></div></div>
+          </div>
+          <div class="ccard-row">
+            <div class="ccard-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div><div class="ccard-lbl">Hours</div><div class="ccard-val">Mon–Sat 10:30am–7:30pm · Sun by Appt</div></div>
+          </div>
+        </div>
+        <div class="ccard-num">02</div>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <div class="form-card reveal d3">
+      <div id="formInner">
+        <div class="form-title">Book a Consultation</div>
+        <div class="form-sub">Tell us about your space and we'll be in touch within 24 hours.</div>
+        <form id="cForm" onsubmit="handleSubmit(event)">
+          <div class="frow">
+            <div class="fgrp">
+              <label class="flbl">Full Name *</label>
+              <input class="fin" type="text" placeholder="Your name" required/>
+            </div>
+            <div class="fgrp">
+              <label class="flbl">Phone *</label>
+              <input class="fin" type="tel" placeholder="+91 XXXXX XXXXX" required/>
+            </div>
+          </div>
+          <div class="fgrp">
+            <label class="flbl">Nearest City *</label>
+            <select class="fin" required>
+              <option value="" disabled selected>Select location</option>
+              <option>Vijayawada</option>
+              <option>Nellore</option>
+              <option>Guntur</option>
+              <option>Other in AP</option>
+            </select>
+          </div>
+          <div class="fgrp">
+            <label class="flbl">I'm interested in</label>
+            <div class="chips">
+              <button type="button" class="chip" onclick="this.classList.toggle('on')">Living Room</button>
+              <button type="button" class="chip" onclick="this.classList.toggle('on')">Bedroom</button>
+              <button type="button" class="chip" onclick="this.classList.toggle('on')">Kitchen</button>
+              <button type="button" class="chip" onclick="this.classList.toggle('on')">Full Home</button>
+              <button type="button" class="chip" onclick="this.classList.toggle('on')">Office</button>
+              <button type="button" class="chip" onclick="this.classList.toggle('on')">Furniture</button>
+            </div>
+          </div>
+          <div class="fgrp">
+            <label class="flbl">Message</label>
+            <textarea class="fin" placeholder="Describe your project, style preferences, timeline…"></textarea>
+          </div>
+          <div class="ffoot">
+            <div class="fnote">We respond within 24 hrs. Your data is private.</div>
+            <button type="submit" class="fsub">
+              Send Message
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="success" id="successMsg">
+        <div class="sico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="stitle">Message Received!</div>
+        <p class="ssub">Our team in <span style="color:var(--gold)">Vijayawada / Nellore</span> will contact you within 24 hours.</p>
+        <button class="rbtn" onclick="resetForm()">Send Another ↩</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fbrand">NANI Interior Works</div>
+  <div class="fcopy">© 2025 NANI Interior Works · Vijayawada & Nellore, Guntur, Andhra Pradesh</div>
+  <div class="flinks">
+    <a href="index.html">Home</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="flyer.html">Flyer</a>
+    <a href="invoice.html">Invoice</a>
+  </div>
+</footer>
+
+<script>
+// Reveal on scroll
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// ── LEAFLET MAP ──
+// AP bounds: North 18.5, South 12.6, East 84.7, West 77.0
+const apBounds = L.latLngBounds(
+  [12.6, 77.0],   // Southwest
+  [18.5, 84.7]    // Northeast
+);
+
+const map = L.map('map', {
+  center: [15.97, 80.30],
+  zoom: 7,
+  zoomControl: true,
+  attributionControl: false,
+  maxBounds: apBounds,
+  maxBoundsViscosity: 1.0,
+  minZoom: 7
+});
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
+
+// Fit map to AP bounds only
+map.fitBounds(apBounds, { padding: [50, 50] });
+
+// Custom icons
+function makeIcon(type) {
+  const bg  = type === 'showroom' ? '#c4a05a' : '#3d8f7c';
+  const bd  = type === 'showroom' ? '#e8c97a' : '#5dbdab';
+  const svg = type === 'showroom'
+    ? `<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="#0a0908" stroke-width="2" fill="none"/><polyline points="9 22 9 12 15 12 15 22" stroke="#0a0908" stroke-width="2" fill="none"/>`
+    : `<circle cx="12" cy="12" r="5" fill="#0a0908"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#0a0908" stroke-width="2"/>`;
+  const html = `<div style="
+    width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+    background:${bg};border:2px solid ${bd};
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 3px 14px rgba(0,0,0,.75);">
+    <svg viewBox="0 0 24 24" style="transform:rotate(45deg);width:13px;height:13px;">${svg}</svg>
+  </div>`;
+  return L.divIcon({ html, className: '', iconSize: [32, 40], iconAnchor: [16, 38], popupAnchor: [0, -40] });
+}
+
+// All pins — showrooms + project locations
+const pins = [
+  // SHOWROOMS
+  {
+    lat: 16.4985, lng: 80.6523, type: 'showroom',
+    tag: 'Flagship Showroom — Vijayawada',
+    title: 'MG Road, Labbipet',
+    work: '<strong>NANI Interior Works HQ</strong>40-1-48 MG Road · Mon–Sat 10am–8pm'
+  },
+  {
+    lat: 14.4426, lng: 79.9865, type: 'showroom',
+    tag: 'Showroom — Nellore',
+    title: 'Grand Trunk Road',
+    work: '<strong>NANI Interior Works</strong>12-3-456 GT Road · Mon–Sat 10:30am–7:30pm'
+  },
+
+  // VIJAYAWADA PROJECTS
+  {
+    lat: 16.5021, lng: 80.6033, type: 'project',
+    tag: 'Project · Vijayawada',
+    title: 'Prakasam Barrage Area',
+    work: '<strong>3 Luxury Villa Interiors</strong>Riverfront residences, full home design'
+  },
+  {
+    lat: 16.4957, lng: 80.6542, type: 'project',
+    tag: 'Project · Vijayawada',
+    title: 'Benz Circle',
+    work: '<strong>5 Premium Apartments</strong>Living rooms, kitchens & master bedrooms'
+  },
+  {
+    lat: 16.5154, lng: 80.6059, type: 'project',
+    tag: 'Project · Vijayawada',
+    title: 'Kanaka Durga Temple Area',
+    work: '<strong>Heritage Home Restoration</strong>Traditional architecture, modern comfort'
+  },
+  {
+    lat: 16.5140, lng: 80.6126, type: 'project',
+    tag: 'Project · Vijayawada',
+    title: 'One Town — Tarapet',
+    work: '<strong>8 Commercial Spaces</strong>Offices, retail fit-outs & hospitality'
+  },
+  {
+    lat: 16.5024, lng: 80.6430, type: 'project',
+    tag: 'Project · Vijayawada',
+    title: 'Labbipet Residences',
+    work: '<strong>4 High-end Apartments</strong>Complete furnishing & bespoke décor'
+  },
+
+  // NELLORE PROJECTS
+  {
+    lat: 14.4321, lng: 79.9667, type: 'project',
+    tag: 'Project · Nellore',
+    title: 'GT Road Corridor',
+    work: '<strong>6 Showroom Fit-outs</strong>Commercial interiors & display design'
+  },
+  {
+    lat: 14.4500, lng: 79.9900, type: 'project',
+    tag: 'Project · Nellore',
+    title: 'Nellore City Centre',
+    work: '<strong>3 Residential Villas</strong>Full home styling & custom furniture'
+  }
+];
+
+pins.forEach(p => {
+  L.marker([p.lat, p.lng], { icon: makeIcon(p.type) })
+    .addTo(map)
+    .bindPopup(`
+      <div class="pop-tag">${p.tag}</div>
+      <div class="pop-title">${p.title}</div>
+      <div class="pop-work">${p.work}</div>
+    `, { maxWidth: 240, minWidth: 210 });
+});
+
+// Form
+function handleSubmit(e) {
+  e.preventDefault();
+  document.getElementById('formInner').style.display = 'none';
+  document.getElementById('successMsg').classList.add('show');
+}
+function resetForm() {
+  document.getElementById('cForm').reset();
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  document.getElementById('successMsg').classList.remove('show');
+  document.getElementById('formInner').style.display = 'block';
+}
+</script>
+</body>
+</html>

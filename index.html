@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NANI Interior Works — Premium Furniture</title>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <style>
+    /* Page-specific extras */
+    .hero-bg-overlay {
+      position: absolute; inset: 0; z-index: 0;
+      background: linear-gradient(90deg, var(--bg-base) 45%, transparent 100%);
+      pointer-events: none;
+    }
+    [data-theme="light"] .hero-bg-overlay {
+      background: linear-gradient(90deg, var(--bg-base) 40%, rgba(247,244,240,0.6) 100%);
+    }
+    .hero-bg-img {
+      display: none;
+    }
+    [data-theme="light"] .hero-bg-img { opacity: 0.12; }
+
+    /* Gallery strip */
+    .gallery-strip {
+      padding: 0 48px 80px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .gallery-card {
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      aspect-ratio: 3/4;
+      position: relative;
+      cursor: pointer;
+    }
+    .gallery-card img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.7s var(--tr), filter 0.5s;
+      filter: brightness(0.8) saturate(0.85);
+    }
+    .gallery-card:hover img { transform: scale(1.08); filter: brightness(1) saturate(1); }
+    .gallery-card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 55%);
+    }
+    .gallery-card-label {
+      position: absolute; bottom: 14px; left: 14px;
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: rgba(255,255,255,0.85);
+    }
+    .gallery-card-num {
+      position: absolute; top: 14px; right: 14px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem; font-weight: 700;
+      color: rgba(255,255,255,0.12);
+    }
+
+    @media (max-width: 1024px) { .gallery-strip { grid-template-columns: repeat(2, 1fr); padding: 0 32px 60px; } }
+    @media (max-width: 600px)  { .gallery-strip { grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px 48px; } }
+  </style>
+</head>
+<body>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">
+    <img src="images/logo.png" alt="NANI Interior Works Logo"/>
+    <div class="nav-logo-text">
+      <span class="nav-logo-name">NANI</span>
+      <span class="nav-logo-sub">Interior Works</span>
+    </div>
+  </a>
+
+  <ul class="nav-center" id="navCenter">
+    <li><a href="#home" class="active">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#items">Item List</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <button class="nav-icon-btn" title="Account">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    </button>
+    <button class="theme-toggle" title="Toggle theme">
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+      <span class="theme-label">Light</span>
+    </button>
+    <button class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero" id="home">
+  <div class="hero-bg-img"></div>
+  <div class="hero-bg-overlay"></div>
+
+  <div class="hero-left" style="position:relative;z-index:2;">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Premium Collection 2025
+    </div>
+
+    <h1 class="hero-h1">
+      FILL YOUR<br>HOME WITH<br>
+      THE <span class="accent-word">BEST</span><br>
+      Interior Design
+    </h1>
+
+    <p class="hero-sub">
+      Discover handcrafted pieces built for those who appreciate 
+      the art of living beautifully. Every room, a statement.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#items" class="btn btn-primary">
+        Our Stores
+        <span class="btn-arrow">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+      <a href="#about" class="btn btn-ghost">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg>
+        Watch Story
+      </a>
+    </div>
+  </div>
+
+  <!-- Right: Large Hero Image -->
+  <div class="hero-img-col">
+    <div class="hero-img-frame">
+      <img src="images/homepage.png" alt="Luxury Interior Design"/>
+    </div>
+    <div class="hero-float-card">
+      <div class="hero-float-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
+      </div>
+      <div>
+        <div class="hero-float-label">Customer Rating</div>
+        <div class="hero-float-val">4.9 / 5.0 ⭐</div>
+      </div>
+    </div>
+    <div class="hero-float-card2">
+      <div class="hero-float-stars">★★★★★</div>
+      <div class="hero-float-sub">4K+ Happy Clients</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ GALLERY STRIP ═══ -->
+<section style="padding: 64px 48px 0;" id="gallery">
+  <div style="text-align:center; margin-bottom: 40px;">
+    <div class="section-label reveal" style="justify-content:center;">Our Spaces</div>
+    <h2 class="section-title reveal reveal-d1">Curated For You</h2>
+  </div>
+</section>
+<div class="gallery-strip">
+  <div class="gallery-card reveal">
+    <img src="images/s1.jpeg" alt="Interior Space 1"/>
+    <div class="gallery-card-overlay"></div>
+    <span class="gallery-card-label">Living Room</span>
+    <span class="gallery-card-num">01</span>
+  </div>
+  <div class="gallery-card reveal reveal-d1">
+    <img src="images/s2.jpeg" alt="Interior Space 2"/>
+    <div class="gallery-card-overlay"></div>
+    <span class="gallery-card-label">Bedroom</span>
+    <span class="gallery-card-num">02</span>
+  </div>
+  <div class="gallery-card reveal reveal-d2">
+    <img src="images/s3.jpeg" alt="Interior Space 3"/>
+    <div class="gallery-card-overlay"></div>
+    <span class="gallery-card-label">Dining</span>
+    <span class="gallery-card-num">03</span>
+  </div>
+  <div class="gallery-card reveal reveal-d3">
+    <img src="images/s4.jpeg" alt="Interior Space 4"/>
+    <div class="gallery-card-overlay"></div>
+    <span class="gallery-card-label">Office</span>
+    <span class="gallery-card-num">04</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══ ITEM LIST ═══ -->
+<section class="section-items" id="items">
+  <div class="items-img-wrap reveal">
+    <img src="images/s5.png" alt="Furniture Collection"/>
+    <div class="items-img-wrap-overlay"></div>
+    <span class="items-img-wrap-tag">Showroom Preview</span>
+  </div>
+
+  <div class="reveal reveal-d1">
+    <div class="section-label">Collection</div>
+    <h2 class="section-title">Explore Our<br>Item List</h2>
+    <p class="items-desc" style="margin-top:14px;">
+      From statement sofas to sculptural lighting — every piece is selected 
+      for craftsmanship, durability, and aesthetic impact. Find the 
+      perfect complement to your living space.
+    </p>
+    <div class="items-tags">
+      <span class="tag active">All Items</span>
+      <span class="tag">Living Room</span>
+      <span class="tag">Bedroom</span>
+      <span class="tag">Dining</span>
+      <span class="tag">Office</span>
+    </div>
+    <a href="flyer.html" class="btn btn-outline">
+      Browse Collection
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ STATS ═══ -->
+<section class="section-stats" id="about">
+  <div class="stats-left">
+    <div class="section-label reveal">Our Numbers</div>
+    <h2 class="section-title reveal reveal-d1">Trusted Across<br>Andhra Pradesh</h2>
+    <p class="stats-desc reveal reveal-d2">
+      Over a 3 years of delivering exceptional interior experiences. 
+      Our numbers reflect our unwavering commitment to quality and craft.
+    </p>
+    <div class="stats-row">
+      <div class="stat-item reveal reveal-d1">
+        <div class="stat-num"><span data-count="100" data-plus="true">0</span></div>
+        <div class="stat-lbl">Projects Completed</div>
+      </div>
+      <div class="stat-item reveal reveal-d2">
+        <div class="stat-num"><span data-count="95" data-plus="false">0</span></div>
+        <div class="stat-lbl">Happy Clients</div>
+      </div>
+      <div class="stat-item reveal reveal-d3">
+        <div class="stat-num"><span data-count="100" data-plus="true">0</span></div>
+        <div class="stat-lbl">Customers</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="radial-svg-wrap reveal">
+    <svg viewBox="0 0 280 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="140" cy="140" r="135" stroke="rgba(200,133,74,0.06)" stroke-width="1"/>
+      <circle cx="140" cy="140" r="108" stroke="rgba(200,133,74,0.10)" stroke-width="1"/>
+      <circle cx="140" cy="140" r="80"  stroke="rgba(200,133,74,0.16)" stroke-width="1"/>
+      <circle cx="140" cy="140" r="52"  stroke="rgba(200,133,74,0.24)" stroke-width="1"/>
+      <circle cx="140" cy="140" r="26"  stroke="rgba(200,133,74,0.35)" stroke-width="1"/>
+
+      <!-- Animated arc -->
+      <path d="M 140 32 A 108 108 0 0 1 248 140" stroke="#c8854a" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M 60 60 A 108 108 0 0 0 32 140"   stroke="rgba(200,133,74,0.45)" stroke-width="1.5" stroke-linecap="round"/>
+
+      <!-- Spokes -->
+      <line x1="5"   y1="140" x2="55"  y2="140" stroke="rgba(200,133,74,0.15)" stroke-width="1"/>
+      <line x1="225" y1="140" x2="275" y2="140" stroke="rgba(200,133,74,0.15)" stroke-width="1"/>
+      <line x1="140" y1="5"   x2="140" y2="55"  stroke="rgba(200,133,74,0.15)" stroke-width="1"/>
+      <line x1="140" y1="225" x2="140" y2="275" stroke="rgba(200,133,74,0.15)" stroke-width="1"/>
+
+      <!-- Orbiting dot -->
+      <g style="transform-origin:140px 140px; animation: spin 10s linear infinite;">
+        <circle cx="140" cy="32" r="5" fill="#c8854a"/>
+      </g>
+      <g style="transform-origin:140px 140px; animation: spin 16s linear infinite reverse;">
+        <circle cx="248" cy="140" r="3.5" fill="rgba(200,133,74,0.7)"/>
+      </g>
+
+      <!-- Dot positions -->
+      <circle cx="140" cy="32"  r="4" fill="#c8854a" opacity="0.6"/>
+      <circle cx="248" cy="140" r="3" fill="rgba(200,133,74,0.6)"/>
+      <circle cx="32"  cy="140" r="3" fill="rgba(200,133,74,0.4)"/>
+      <circle cx="140" cy="248" r="2" fill="rgba(200,133,74,0.25)"/>
+
+      <!-- Center -->
+      <circle cx="140" cy="140" r="22" fill="rgba(200,133,74,0.08)" stroke="rgba(200,133,74,0.3)" stroke-width="1"/>
+      <circle cx="140" cy="140" r="9"  fill="#c8854a" opacity="0.9"/>
+      <circle cx="140" cy="140" r="4"  fill="#fff" opacity="0.9"/>
+
+      <!-- Text -->
+      <text x="140" y="168" text-anchor="middle" fill="rgba(200,133,74,0.7)" font-family="Poppins" font-size="7" font-weight="600" letter-spacing="3">NANI WORKS</text>
+    </svg>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ TESTIMONIALS ═══ -->
+<section style="padding: 64px 48px 20px;" id="contact">
+  <div style="text-align:center; margin-bottom: 48px;">
+    <div class="section-label reveal" style="justify-content:center;">What Clients Say</div>
+    <h2 class="section-title reveal reveal-d1">Stories of<br><em style="color:var(--accent);">Satisfaction</em></h2>
+  </div>
+</section>
+<div class="section-testimonials">
+  <div class="t-card reveal">
+    <div class="t-stars">★★★★★</div>
+    <p class="t-text">"The craftsmanship is extraordinary. Every piece felt made specifically for our home. Absolutely worth every rupee invested."</p>
+    <div class="t-author">
+      <div class="t-av">AR</div>
+      <div><div class="t-name">Arjun Rao</div><div class="t-role">Interior Architect</div></div>
+    </div>
+  </div>
+  <div class="t-card reveal reveal-d1">
+    <div class="t-stars">★★★★★</div>
+    <p class="t-text">"Finally a furniture brand that understands luxury without being excessive. The dark walnut dining set is the centerpiece of our home."</p>
+    <div class="t-author">
+      <div class="t-av">PS</div>
+      <div><div class="t-name">Priya Sharma</div><div class="t-role">Lifestyle Blogger</div></div>
+    </div>
+  </div>
+  <div class="t-card reveal reveal-d2">
+    <div class="t-stars">★★★★★</div>
+    <p class="t-text">"Delivery was seamless, the team was professional, and the quality exceeded all expectations. NANI is truly in a class apart."</p>
+    <div class="t-author">
+      <div class="t-av">KM</div>
+      <div><div class="t-name">Karthik Menon</div><div class="t-role">Real Estate Developer</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-left">
+    <img src="images/logo.png" alt="Logo" class="footer-logo"/>
+    <div>
+      <div class="footer-brand">NANI INTERIOR WORKS</div>
+      <div style="font-size:0.68rem;color:var(--text-muted);letter-spacing:0.1em;">www.naniinterior.com</div>
+    </div>
+  </div>
+  <div class="footer-copy">© 2025 Nani Interior Works. All rights reserved.</div>
+  <div class="footer-links">
+    <a href="business-card.html">Business Card</a>
+    <a href="flyer.html">Gallery</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</footer>
+
+<script src="js/script.js"></script>
+</body>
+</html>
