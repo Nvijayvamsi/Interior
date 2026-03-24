@@ -372,6 +372,7 @@ footer {
   gap: 48px;
   position: relative;
   overflow: hidden;
+  background: url('../images/s1.jpeg') center center/cover no-repeat;
 }
 .hero::before {
   content: '';
@@ -918,6 +919,15 @@ footer {
   .invoice-payment { grid-template-columns: 1fr; }
 }
 @media (max-width: 600px) {
-  .hero-img-frame img { height: 300px; }
+  .hero {
+    grid-template-columns: 1fr;
+    padding: calc(var(--nav-h) + 10px) 0 24px;
+    gap: 0;
+  }
+  .hero-img-col {
+    margin-top: 18px;
+    padding: 0 0px;
+  }
+  .hero-img-frame img { height: 220px; }
   .hero-float-card, .hero-float-card2 { display: none; }
 }
